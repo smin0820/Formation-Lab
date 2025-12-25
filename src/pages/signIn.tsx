@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSignInWithOAuth } from "@/hooks/mutations/useSignInWithOAuth";
 import { useSignInWithPassword } from "@/hooks/mutations/useSignInWithPassword";
+import { generateErrorMessage } from "@/lib/error";
 import { useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
@@ -14,13 +15,22 @@ export default function SignIn() {
 
   const { mutate: signInWithPassword } = useSignInWithPassword({
     onError: (error) => {
-      toast.error(error.message, {
+      const message = generateErrorMessage(error);
+
+      toast.error(message, {
         position: "top-center",
       });
       setPassword("");
     },
   });
-  const { mutate: signInWithOAuth } = useSignInWithOAuth();
+  const { mutate: signInWithOAuth } = useSignInWithOAuth({
+    onError: (error) => {
+      const message = generateErrorMessage(error);
+      toast.error(message, {
+        position: "top-center",
+      });
+    },
+  });
 
   const handleSignInWithPasswordClick = () => {
     if (email.trim() === "") return;
